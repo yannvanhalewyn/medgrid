@@ -12,17 +12,18 @@
 
 (s/def ::raw-operation #{"toggle" "activate" "deactivate"})
 (s/def ::raw-coordinate1 (s/and string? #(re-matches #"\d+" %)))
-(s/def ::raw-coordinate (s/cat :coord/x ::raw-coordinate1 :coord/y ::raw-coordinate1))
+(s/def ::raw-coordinate (s/cat :coord/x ::raw-coordinate1
+                               :coord/y ::raw-coordinate1))
 
 (s/def ::raw-command (s/cat :raw/operation ::raw-operation
                             :raw/from ::raw-coordinate
-                            :_skip any?
+                            :_skip #{"to"}
                             :raw/to ::raw-coordinate))
 
 (s/def ::coordinate (s/tuple pos-int? pos-int?))
 (s/def ::from ::coordinate)
 (s/def ::to ::coordinate)
-(s/def ::operation #{::toggle ::activate})
+(s/def ::operation #{::toggle ::activate ::deactivate})
 
 (s/def ::command (s/cat :operation ::operation
                         :parameters (s/keys :req [::from ::to])))
@@ -35,7 +36,7 @@
   "Conforms the spec and throws an exception if invalid."
   [spec data]
   (let [result (s/conform spec data)]
-    (if (= ::s/invalid result)
+    (if (= result ::s/invalid)
       (throw (ex-info "Raw input command invalid!"
                       {::command data
                        ::errors (s/explain-data spec data)}))
@@ -70,9 +71,9 @@
 
 (defn parse-lines
   "Parses the lines from an input reader where each line is a raw command.
-  Returns a list of command vectors. Pass in a reader and handle file closing
-  side effects elsewhere. Returns a lazy sequence of command vectors, reading
-  the lines in the file as the parser progresses."
+  Returns a list of command vectors. Pass in a reader that could be from a file
+  or network stream. Returns a lazy sequence of command vectors, reading
+  the lines in stream the parser progresses."
   [rdr]
   (map parse-command (line-seq rdr)))
 

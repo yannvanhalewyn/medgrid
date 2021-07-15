@@ -2,12 +2,10 @@
 
 1. **Start the server**
 
-Start a REPL with your prefered approach (this project uses tools.deps). From the REPL you can start the server:
+Start a REPL with your prefered approach (this project uses tools.deps). From the REPL you can start the server by running the go function in the user namespace:
 
 ``` clojure
-=> (in-ns 'medmap.server)
-;; => #namespace[medmap.server]
-=> (start!)
+user=> (go)
 ```
 
 2. **Start CLJS compilation**
