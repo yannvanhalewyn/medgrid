@@ -1,9 +1,10 @@
-(ns medmap.core
+(ns medmap.command
   "This namespace is all about the commands that manipulate the network grid. It
-  is responsible for parsing the commands provided by the mobile networking
-  company."
+  is responsible for parsing the commands provided by the mobile
+  networking company and executing them over a grid."
   (:require [clojure.spec.alpha :as s]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [medmap.grid :as grid]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -63,17 +64,47 @@
   (let [{:raw/keys [operation from to]}
         (conform! ::raw-command (str/split raw-command #"[,\s]"))
         parse-coord (fn [{:coord/keys [x y]}] [(parse-int x) (parse-int y)])]
-    [(keyword (str *ns*) operation)
+    [(keyword "medmap.command" operation)
      {::from (parse-coord from)
       ::to (parse-coord to)}]))
 
-(defn parse-file
-  "Parses an input text file where each line is a raw command. Returns a list of
-  command vectors. Pass in a reader and handle file closing side effects
-  elsewhere. Returns a lazy sequence of command vectors, reading the lines in
-  the file as the parser progresses."
+(defn parse-lines
+  "Parses the lines from an input reader where each line is a raw command.
+  Returns a list of command vectors. Pass in a reader and handle file closing
+  side effects elsewhere. Returns a lazy sequence of command vectors, reading
+  the lines in the file as the parser progresses."
   [rdr]
   (map parse-command (line-seq rdr)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Manipulating the grid
+
+(defn- apply-subgrid
+  "Applies a transformation function f to every cell of the subgrid of the
+  command parameters."
+  [f grid {::keys [from to]}]
+  (reduce f grid (grid/subgrid->cells from to)))
+
+(defmulti apply-command (fn [_grid cmd] (first cmd)))
+
+(defmethod apply-command :default [grid cmd]
+  (throw (ex-info "Cannot process command" {::command cmd})))
+
+(defmethod apply-command ::toggle [grid [_ params]]
+  (apply-subgrid grid/toggle grid params))
+
+(defmethod apply-command ::activate [grid [_ params]]
+  (apply-subgrid grid/activate grid params))
+
+(defmethod apply-command ::deactivate [grid [_ params]]
+  (apply-subgrid grid/deactivate grid params))
+
+(defn apply-commands
+  "Given a grid, iterate over all the commands and execute them. Returns a new
+  grid."
+  [grid commands]
+  (reduce apply-command grid commands))
 
 (comment
 
@@ -82,4 +113,12 @@
 
   (parse-file (io/reader (io/resource "input-data.txt")))
   (parse-command "toggle 192,165 to 528,652")
+
+  (-> (grid/make 10 10)
+      (apply-command [::toggle {::from [0 0] ::to [2 2]}])
+      (apply-command [::deactivate {::from [0 0] ::to [1 1]}])
+      (apply-command [::activate {::from [2 2] ::to [3 3]}])
+      ::grid/cells
+      count)
+
   )
