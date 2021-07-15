@@ -15,13 +15,13 @@
     [:formats "application/transit+json"]
     merge )))
 
-(defn routes [req]
+(defn- routes [req]
   (case (:uri req)
     "/" (endpoints/index req)
     "/api/grid" (endpoints/grid req)
     (endpoints/not-found req)))
 
-(defn make-handler [routes]
+(defn- make-handler [routes]
   (-> routes
       (ring.middleware.resource/wrap-resource "public")
       (m.middleware/wrap-format muuntaja)))

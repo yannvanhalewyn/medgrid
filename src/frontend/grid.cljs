@@ -12,7 +12,6 @@
 (defn- image-data [pixels width height]
   (js/ImageData. (js/Uint8ClampedArray. (.flat (to-array pixels))) width height))
 
-
 (defn- draw! [ctx {::grid/keys [width height] :as grid}]
   (.putImageData ctx (image-data (->pixels grid) width height) 0 0))
 

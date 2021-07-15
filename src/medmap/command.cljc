@@ -108,11 +108,10 @@
 
 (comment
 
+  (parse-command "toggle 192,165 to 528,652")
+
   (with-open [rdr (io/reader (io/resource "input-data.txt"))]
     (doall (parse-file rdr)))
-
-  (parse-file (io/reader (io/resource "input-data.txt")))
-  (parse-command "toggle 192,165 to 528,652")
 
   (-> (grid/make 10 10)
       (apply-command [::toggle {::from [0 0] ::to [2 2]}])

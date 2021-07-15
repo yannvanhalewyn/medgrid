@@ -1,35 +1,48 @@
 (ns medmap.grid
   "This namespace represents the network grid and how to manipulate it. The
-  chosen datastructure for the network grid"
+  chosen datastructure for the network grid is map containing width, height and
+  a set of the active cells. This makes it easy to toggle or manipulate cells,
+  and also might decrease the data and network footprint when the network
+  providers decide to deactivate half the country because of a bandwith
+  shortage, which is desirable. Because there is a bandwith shortage."
   (:require [clojure.spec.alpha :as s]))
+
 
 (s/def ::width pos-int?)
 (s/def ::height pos-int?)
 (s/def ::coord (s/tuple pos-int? pos-int?))
-(s/def ::cell boolean?)
 (s/def ::cells (s/coll-of ::coord :kind set?))
 
 (s/def ::grid (s/keys :req [::width ::height ::cells]))
 
-(defn make [width height]
-  {::width width
-   ::height height
-   ::cells #{}})
-
-(defn toggle-set
-  "Toggles the presence of an element in a set."
+(defn- toggle-set
+  "Utility function that toggles the presence of an element in a set."
   [set elem]
   (if (contains? set elem)
     (disj set elem)
     (conj set elem)))
 
-(defn toggle [grid coord]
+(defn make
+  "Makes a new empty grid of width and height. Defaults to all cells being
+  inactive."
+  [width height]
+  {::width width
+   ::height height
+   ::cells #{}})
+
+(defn toggle
+  "Toggles network activity at given coordinates."
+  [grid coord]
   (update grid ::cells toggle-set coord))
 
-(defn activate [grid coord]
+(defn activate
+  "Activates network activity at given coordinates."
+  [grid coord]
   (update grid ::cells conj coord))
 
-(defn deactivate [grid coord]
+(defn deactivate
+  "Disables network activity at given coordinates."
+  [grid coord]
   (update grid ::cells disj coord))
 
 (defn active?
@@ -49,5 +62,8 @@
     [x y]))
 
 (comment
-  (-> (make 10 10) (toggle-cell [1 1]) )
+  (-> (make 10 10)
+      (toggle [1 1])
+      (activate [2 1])
+      (toggle [2 1]))
   )
