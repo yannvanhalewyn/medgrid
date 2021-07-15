@@ -4,9 +4,10 @@
             [frontend.grid :as grid]))
 
 (defn app []
-  [:<>
-   [:h1 "Hello!"]
-   [grid/component]])
+  [:div.bg-yellow-300.p-12.h-screen
+   [:h1.text-3xl.font-bold "MedMap"]
+   [:div.mt-4
+    [grid/component]]])
 
 (defn ^:dev/after-load render
   "Render the toplevel component for this app."

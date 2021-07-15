@@ -32,11 +32,10 @@
 (defn deactivate [grid coord]
   (update grid ::cells disj coord))
 
-(defn within?
-  "Wether the coordinate is contained within the grid."
-  [{::keys [width height]} [x y]]
-  (and (pos-int? x) (pos-int? y)
-       (< x width) (< y height)))
+(defn active?
+  "Wether the cell at that position is active or not"
+  [{::keys [cells]} coord]
+  (contains? cells coord))
 
 (defn subgrid->cells
   "Given a subgrid represented by the square contained between two points,
