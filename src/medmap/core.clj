@@ -1,6 +1,8 @@
 (ns medmap.core
-  (:require [medmap.command :as command]
-            [medmap.grid :as grid]))
+  (:require [clojure.java.io :as io]
+            [medmap.command :as command]
+            [medmap.grid :as grid]
+            [medmap.server :as server]))
 
 (def WIDTH 700)
 (def HEIGHT 700)
@@ -28,3 +30,9 @@
    (assignment-1))
 
   )
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Assignment-2
+
+(def start! server/start!)

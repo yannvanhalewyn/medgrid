@@ -1,2 +1,6 @@
 {:paths ["src" "resources"]
- :deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
+ :deps {org.clojure/clojure {:mvn/version "1.10.3"}
+        http-kit/http-kit {:mvn/version "2.5.1"}
+        hiccup/hiccup {:mvn/version "1.0.5"}
+        metosin/muuntaja {:mvn/version "0.6.8"}
+        ring/ring-core {:mvn/version "1.9.3"}}}
