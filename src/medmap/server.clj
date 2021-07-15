@@ -18,7 +18,7 @@
 (defn routes [req]
   (case (:uri req)
     "/" (endpoints/index req)
-    "/grid" (endpoints/grid req)
+    "/api/grid" (endpoints/grid req)
     (endpoints/not-found req)))
 
 (defn make-handler [routes]

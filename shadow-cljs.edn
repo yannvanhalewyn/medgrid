@@ -3,6 +3,7 @@
         :modules {:main {:init-fn frontend.core/main}}
         :output-dir "resources/public/js"
         :target :browser}}
- :dependencies [[reagent "0.8.1"]]
+ :dependencies [[reagent "0.8.1"]
+                [cljs-ajax "0.7.5"]]
  :nrepl {:port 3333}
  :source-paths ["src"]}

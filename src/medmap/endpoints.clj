@@ -34,9 +34,7 @@
     (let [grid (grid/make WIDTH HEIGHT)]
       (with-open [rdr (io/reader (io/resource "input-data.txt"))]
         (->> (command/parse-lines rdr)
-             (command/apply-commands grid)
-             ::grid/cells
-             count)))))
+             (command/apply-commands grid))))))
 
 (defn grid [_req]
   {:status 200
